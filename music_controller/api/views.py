@@ -10,7 +10,7 @@ from .serializers import (CreateRoomSerializer, RoomSerializer,
 
 
 '''
-  继承ListAPIView: 查看所有创建的Room
+  查看所有已创建的房间
 '''
 class RoomView(generics.ListAPIView):
   queryset = Room.objects.all()
@@ -26,8 +26,7 @@ class GetRoom(APIView):
   # 用于查找房间的参数
   lookup_url_kwarg = 'code'
   '''
-    功能: 获取房间
-    返回: 房间所有信息
+    获取房间所有信息
   '''
   def get(self,request, format=None):
     # 从请求的查询参数中获取房间的唯一标识符:code信息
@@ -45,12 +44,12 @@ class GetRoom(APIView):
     return Response({'Bad Request' : 'Invalid Room Code'}, status=status.HTTP_404_NOT_FOUND)
 
 
+'''
+  加入房间
+'''
 class JoinRoom(APIView):
   lookup_url_kwarg = 'code'
-  '''
-    功能: 加入已有房间
-    返回: 是否加入成功
-  '''
+
   def post(self, request, format=None):
     # 确保会话存在
     if not self.request.session.exists(self.request.session.session_key):
@@ -70,17 +69,21 @@ class JoinRoom(APIView):
     return Response({'Bad Request': 'Invalid post data, did not find a code key'}, status.HTTP_400_BAD_REQUEST)
 
 
+'''
+  创建房间
+'''
 class CreateRoomView(APIView):
   serializer_class = CreateRoomSerializer
-  '''
-    功能: 创建一个房间
-    返回: Room的所有数据
-  '''
+
   def post(self, request, format=None):
     # 确保会话存在
     if not self.request.session.exists(self.request.session.session_key):
       self.request.session.create()
+
+    # 序列化
     serializer = self.serializer_class(data=request.data)
+
+    # 设置房间信息
     if serializer.is_valid():
       guest_can_pause = serializer.data.get('guest_can_pause')
       votes_to_skip = serializer.data.get('votes_to_skip')
@@ -101,6 +104,10 @@ class CreateRoomView(APIView):
       return Response(RoomSerializer(room).data, status=200)
     return Response({'Bad Request': 'Invalid data'}, status=400)
 
+
+'''
+  判断当前用户是否在房间内
+'''
 class UserInRoom(APIView):
   def get(self, request, format=None):
     if not self.request.session.exists(self.request.session.session_key):
@@ -110,6 +117,10 @@ class UserInRoom(APIView):
     }
     return JsonResponse(data=data, status=200)
 
+
+'''
+  退出房间
+'''
 class LeaveRoom(APIView):
   def post(self, request, format=None):
     if 'room_code' in self.request.session:
@@ -121,12 +132,17 @@ class LeaveRoom(APIView):
         room.delete()
     return Response({"Message": "Success"}, status=200)
 
+
+'''
+  更新房间信息
+'''
 class UpdateRoom(APIView):
   serializer_class = UpdateRoomSerializer
   def patch(self, request, format=None):
     if not self.request.session.exists(self.request.session.session_key):
       self.request.session.create()
     serializer = self.serializer_class(data=request.data)
+    # 设置房间信息
     if serializer.is_valid():
       guest_can_pause = serializer.data.get('guest_can_pause')
       votes_to_skip = serializer.data.get('votes_to_skip')

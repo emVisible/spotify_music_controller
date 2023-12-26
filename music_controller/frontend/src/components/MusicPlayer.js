@@ -6,6 +6,9 @@ import React, { Component } from "react";
 
 
 
+/**
+ * Material UI封装的音乐播放器组件
+*/
 export default class MusicPlayer extends Component {
   constructor(props) {
     super(props)

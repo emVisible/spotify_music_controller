@@ -37,16 +37,21 @@ export default class CreateRoom extends Component {
     this.handleUpdateButtonPresssed =
       this.handleUpdateButtonPresssed.bind(this);
   }
+  // 投票跳过的数量
   handleVotesChange(e) {
     this.setState({
       votesToSkip: e.target.value,
     });
   }
+
+  // 设置游客是否可以暂停
   handleGuestCanPauseChange(e) {
     this.setState({
       guestCanPause: e.target.value === "true" ? true : false,
     });
   }
+
+  // 调用API 创建房间
   handleRoomButtonPressed() {
     const requestOption = {
       method: "POST",
@@ -60,6 +65,8 @@ export default class CreateRoom extends Component {
       .then((res) => res.json())
       .then((data) => this.props.history.push("/room/" + data.code));
   }
+
+  // 更新信息
   handleUpdateButtonPresssed() {
     const requestOption = {
       method: "PATCH",

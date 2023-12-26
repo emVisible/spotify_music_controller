@@ -22,17 +22,21 @@ export default class Room extends Component {
     this.renderSettingsButton = this.renderSettingsButton.bind(this)
     this.authenticateSpotify = this.authenticateSpotify.bind(this)
     this.getCurrentSong = this.getCurrentSong.bind(this)
+    // 调用api, 获取房间信息
     this.getRoomDetails()
   }
 
+  // DOM挂载后开始轮询
   componentDidMount(){
     this.interval = setInterval(this.getCurrentSong, 1000)
   }
 
+  // 组件卸载前关闭轮询
   componentWillUnmount(){
     clearInterval(this.interval)
   }
 
+  // 验证
   authenticateSpotify() {
     fetch('/spotify/is-authenticated')
       .then(res => res.json())
@@ -48,6 +52,7 @@ export default class Room extends Component {
       })
   }
 
+  // 获取当前歌曲
   getCurrentSong() {
     fetch('/spotify/current-song')
       .then(res => {
@@ -65,6 +70,7 @@ export default class Room extends Component {
   }
 
 
+  // 获取房间信息
   getRoomDetails() {
     fetch('/api/get-room' + '?code=' + this.roomCode)
       .then(res => {
@@ -86,6 +92,8 @@ export default class Room extends Component {
         }
       })
   }
+
+  // 离开房间
   leaveButtonPressed() {
     const requestOption = {
       method: 'POST',
@@ -93,15 +101,20 @@ export default class Room extends Component {
     }
     fetch('/api/leave-room', requestOption)
       .then(_res => {
+        // 回调: pop当前房间room code
         this.props.leaveRoomCallback()
         this.props.history.push('/')
       })
   }
+
+  // 更新isShow
   updateShowSettings(value) {
     this.setState({
       showSettings: value
     })
   }
+
+  // 渲染房间设置
   renderSettings() {
     return (
       <Grid container spacing={1} >

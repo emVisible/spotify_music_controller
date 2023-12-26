@@ -16,6 +16,7 @@ export default class HomePage extends Component {
     this.clearRoomCode = this.clearRoomCode.bind(this)
   }
 
+  // 通过hook获取room code
   async componentDidMount() {
     fetch('/api/user-in-room')
       .then(res => res.json())
@@ -27,6 +28,8 @@ export default class HomePage extends Component {
       })
   }
 
+  
+  // 渲染主页
   renderHomePage() {
     return (
       <Grid container spacing={3}>
@@ -51,11 +54,15 @@ export default class HomePage extends Component {
       </Grid>
     )
   }
+
+  // 清空client room code && 在退出房间时自动调用
   clearRoomCode() {
     this.setState({
       roomCode: null
     })
   }
+
+  // 渲染
   render() {
     return (
       <BrowserRouter>
@@ -71,7 +78,6 @@ export default class HomePage extends Component {
           <Route path='/room/:roomCode' render={(props) => {
             return <Room {...props} leaveRoomCallback={this.clearRoomCode}></Room>
           }}></Route>
-
         </Switch>
       </BrowserRouter>
     )

@@ -45,11 +45,15 @@ export default class RoomJoinPage extends Component {
       </Grid>
     )
   }
+
+  // 表单输入监听
   handleTextFieldChange(e) {
     this.setState({
       roomCode: e.target.value
     })
   }
+
+  // 加入房间
   roomButtonPressed() {
     const requestOptions = {
       method: "POST",
@@ -58,10 +62,12 @@ export default class RoomJoinPage extends Component {
         code: this.state.roomCode
       })
     }
+    // 调用join-room api, 加入房间
     fetch('/api/join-room', requestOptions)
       .then(res => {
         if (res.ok) {
           console.log(res)
+          // 添加到router history中
           this.props.history.push(`/room/${this.state.roomCode}/`)
         } else {
           this.setState({
